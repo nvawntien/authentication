@@ -1,0 +1,9 @@
+### Đăng ký tài khoản (Sign Up)
+POST http://localhost:8080/user/sign-up
+Content-Type: application/json
+
+{
+    "FullName": "Nguyen Van Tung",
+    "Email": "tung2006@gmail.com",
+    "Password": "vantung2006"
+}

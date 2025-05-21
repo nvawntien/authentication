@@ -3,6 +3,8 @@ package main
 import (
 	"myapp/db"
 	"myapp/handler"
+	"myapp/repository/repo_impl"
+	"myapp/router"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,13 +19,20 @@ func main() {
 	}
 
 	sql.Connect()
-
 	defer sql.Close()
 
 	e := echo.New()
 
-	e.GET("/user/sign-in", handler.HandleSignIn)
-	e.GET("/user/sign-up", handler.HandleSignUp)
+	userHandler := handler.UserHandler{
+		UserRepo: repo_impl.NewUserRepo(sql),
+	}
+
+	api := router.API{
+		Echo:        e,
+		UserHandler: userHandler,
+	}
+
+	api.SetupRouter()
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
