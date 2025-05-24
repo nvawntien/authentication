@@ -2,9 +2,11 @@ package repo_impl
 
 import (
 	"context"
+	"database/sql"
 	"myapp/banana"
 	"myapp/db"
 	"myapp/model"
+	"myapp/model/req"
 	"myapp/repository"
 	"time"
 
@@ -41,6 +43,22 @@ func (u *UserRepoImpl) SaveUser(context context.Context, user model.User) (model
 			}
 		}
 		return user, banana.SignUpFail
+	}
+
+	return user, nil
+}
+
+func (u *UserRepoImpl) CheckLogin(context context.Context, loginReq req.ReqSignIn) (model.User, error) {
+	var user = model.User{}
+	err := u.sql.Db.GetContext(context, &user, "SELECT * FROM users WHERE email=$1", loginReq.Email)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, banana.UserNotFound
+		}
+
+		log.Error(err.Error())
+		return user, err
 	}
 
 	return user, nil
